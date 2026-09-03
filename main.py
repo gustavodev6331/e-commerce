@@ -8,7 +8,7 @@ class User(db.Model):
     name: Mapped[str] = mapped_column(String(150), nullable=False)
     password: Mapped[str] = mapped_column(String(150), nullable=False)
 
-    cart_items: Mapped[list["CartItem"]] = relationship(...)
+    cart_items: Mapped[list["CartItem"]] = relationship()
 
 
 class Product(db.Model):
@@ -20,7 +20,7 @@ class Product(db.Model):
     price: Mapped[float] = mapped_column(float, nullable=False)
     photo_url: Mapped[str] = mapped_column(String(300), nullable=False)
 
-    cart_items: Mapped[list[CartItem]] = relationship(back_populates="cart_items")
+    cart_items: Mapped[list["CartItem"]] = relationship()
 
 
 class CartItem(db.Model):
@@ -32,6 +32,5 @@ class CartItem(db.Model):
     user_id: Mapped[int] = mapped_column(db.ForeignKey('user.id'))
     product_id: Mapped[int] = mapped_column(db.ForeignKey('product.id'))
 
-
-    user: Mapped[int] = relationship(...)
-
+    user: Mapped["User"] = relationship()
+    product: Mapped["Product"] = relationship()
