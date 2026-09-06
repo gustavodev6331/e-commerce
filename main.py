@@ -71,9 +71,3 @@ class OrderItems(db.Model):
     product: Mapped["Product"] = relationship()
     order: Mapped["Order"] = relationship()
 
-class Payment:
-    __tablename__ = 'payment'
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-
-    date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    total: Mapped[float] = mapped_column(float, nullable=False)
