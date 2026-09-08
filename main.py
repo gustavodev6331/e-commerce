@@ -1,11 +1,12 @@
 import flask
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
-from pip._internal.utils import datetime
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Text, ForeignKey
+from sqlalchemy import Integer, String, Text, ForeignKey, DateTime, NUMERIC
 from sqlalchemy.orm import Mapped
-import datetime
+from datetime import datetime
+from decimal import Decimal
+
 
 
 class User(db.Model):
@@ -26,7 +27,7 @@ class Product(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(150), nullable=False)
     description: Mapped[str] = mapped_column(String(300), nullable=False)
-    price: Mapped[float] = mapped_column(float, nullable=False)
+    price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     photo_url: Mapped[str] = mapped_column(String(300), nullable=False)
 
     cart_items: Mapped[list["CartItem"]] = relationship()
@@ -50,7 +51,7 @@ class Order(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    total: Mapped[float] = mapped_column(float, nullable=False)
+    total: Mapped[Decimal] = mapped_column(Numeric(10,2), nullable=False)
     status: Mapped[str] = mapped_column(String, nullable=False)
 
     user_id: Mapped[int] = mapped_column(db.ForeignKey('user.id'))
@@ -63,7 +64,7 @@ class OrderItems(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
-    price: Mapped[float] = mapped_column(float, nullable=False)
+    price: Mapped[Decimal] = mapped_column(Numeric(10,2), nullable=False)
 
     product_id: Mapped[int] = mapped_column(db.ForeignKey('product.id'))
     order_id: Mapped[int] = mapped_column(db.ForeignKey('order.id'))
