@@ -1,12 +1,23 @@
-import flask
-from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
+import os
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Text, ForeignKey, DateTime, NUMERIC
-from sqlalchemy.orm import Mapped
+from sqlalchemy import Integer, String, Numeric, DateTime
 from datetime import datetime
 from decimal import Decimal
 
+
+app = Flask(__name__)
+
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+
+class Base(DeclarativeBase):
+    pass
+
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///shop.db"
+
+db = SQLAlchemy(model_class=Base)
+db.init_app(app)
 
 
 class User(db.Model):
@@ -72,3 +83,5 @@ class OrderItems(db.Model):
     product: Mapped["Product"] = relationship()
     order: Mapped["Order"] = relationship()
 
+with app.app_context():
+    db.create_all()
