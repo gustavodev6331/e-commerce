@@ -1,4 +1,6 @@
 #enviorment methods
 .env
 
-.idea
+.idea/
+
+instance/
