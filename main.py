@@ -85,3 +85,27 @@ class OrderItems(db.Model):
 
 with app.app_context():
     db.create_all()
+
+    products = Product(
+        name="Developer T-shirt",
+        description="A T-shirt made for developers",
+        price=29.99,
+        photo_url="https://shirt.com",
+    )
+    db.session.add(products)
+    products_2 = Product(
+        name="Gamer Keyboard",
+        description="The perfect keyboard for who love gaming",
+        price=49.99,
+        photo_url="https://keyboard.com",
+    )
+    db.session.add(products_2)
+    products_3 = Product(
+        name="Developer chair",
+        description="The most comfortable chair for developers who have to work hours a day.",
+        price=89.99,
+        photo_url="https://developerchair.com",
+    )
+    db.session.add(products_3)
+
+    db.session.commit()
