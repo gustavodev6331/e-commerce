@@ -28,8 +28,8 @@ class User(db.Model):
     name: Mapped[str] = mapped_column(String(150), nullable=False)
     password: Mapped[str] = mapped_column(String(150), nullable=False)
 
-    cart_items: Mapped[list["CartItem"]] = relationship()
-    orders: Mapped[list["Order"]] = relationship()
+    cart_items: Mapped[list["CartItem"]] = relationship(back_populates="user")
+    orders: Mapped[list["Order"]] = relationship(back_populates="user")
 
 
 class Product(db.Model):
@@ -41,8 +41,8 @@ class Product(db.Model):
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     photo_url: Mapped[str] = mapped_column(String(300), nullable=False)
 
-    cart_items: Mapped[list["CartItem"]] = relationship()
-    order_items: Mapped[list["OrderItems"]] = relationship()
+    cart_items: Mapped[list["CartItem"]] = relationship(back_populates="product")
+    order_items: Mapped[list["OrderItems"]] = relationship(back_populates="product")
 
 
 class CartItem(db.Model):
@@ -54,8 +54,8 @@ class CartItem(db.Model):
     user_id: Mapped[int] = mapped_column(db.ForeignKey('user.id'))
     product_id: Mapped[int] = mapped_column(db.ForeignKey('product.id'))
 
-    user: Mapped["User"] = relationship()
-    product: Mapped["Product"] = relationship()
+    user: Mapped["User"] = relationship(back_populates="cart_items")
+    product: Mapped["Product"] = relationship(back_populates="cart_items")
 
 class Order(db.Model):
     __tablename__ = 'order'
@@ -67,8 +67,8 @@ class Order(db.Model):
 
     user_id: Mapped[int] = mapped_column(db.ForeignKey('user.id'))
 
-    user: Mapped["User"] = relationship()
-    order_items: Mapped[list["OrderItems"]] = relationship()
+    user: Mapped["User"] = relationship(back_populates="orders")
+    order_items: Mapped[list["OrderItems"]] = relationship(back_populates="order")
 
 class OrderItems(db.Model):
     __tablename__ = 'order_items'
@@ -80,32 +80,37 @@ class OrderItems(db.Model):
     product_id: Mapped[int] = mapped_column(db.ForeignKey('product.id'))
     order_id: Mapped[int] = mapped_column(db.ForeignKey('order.id'))
 
-    product: Mapped["Product"] = relationship()
-    order: Mapped["Order"] = relationship()
+    product: Mapped["Product"] = relationship(back_populates="order_items")
+    order: Mapped["Order"] = relationship(back_populates="order_items")
 
 with app.app_context():
     db.create_all()
 
-    products = Product(
-        name="Developer T-shirt",
-        description="A T-shirt made for developers",
-        price=29.99,
-        photo_url="https://shirt.com",
-    )
-    db.session.add(products)
-    products_2 = Product(
-        name="Gamer Keyboard",
-        description="The perfect keyboard for who love gaming",
-        price=49.99,
-        photo_url="https://keyboard.com",
-    )
-    db.session.add(products_2)
-    products_3 = Product(
-        name="Developer chair",
-        description="The most comfortable chair for developers who have to work hours a day.",
-        price=89.99,
-        photo_url="https://developerchair.com",
-    )
-    db.session.add(products_3)
+    result = db.session.execute(db.select(Product))
+    products = result.scalars().all()
+    for product in products:
+        print(product.name)
 
-    db.session.commit()
+    # products = Product(
+    #     name="Developer T-shirt",
+    #     description="A T-shirt made for developers",
+    #     price=29.99,
+    #     photo_url="https://shirt.com",
+    # )
+    # db.session.add(products)
+    # products_2 = Product(
+    #     name="Gamer Keyboard",
+    #     description="The perfect keyboard for who love gaming",
+    #     price=49.99,
+    #     photo_url="https://keyboard.com",
+    # )
+    # db.session.add(products_2)
+    # products_3 = Product(
+    #     name="Developer chair",
+    #     description="The most comfortable chair for developers who have to work hours a day.",
+    #     price=89.99,
+    #     photo_url="https://developerchair.com",
+    # )
+    # db.session.add(products_3)
+    #
+    # db.session.commit()
