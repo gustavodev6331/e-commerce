@@ -119,5 +119,5 @@ def home():
     result = db.session.execute(db.select(Product))
     products = result.scalars().all()
 
-    return render_template('home.html', products=products)
+    return render_template('index.html', products=products)
 
