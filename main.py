@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Numeric, DateTime
@@ -86,10 +86,6 @@ class OrderItems(db.Model):
 with app.app_context():
     db.create_all()
 
-    result = db.session.execute(db.select(Product))
-    products = result.scalars().all()
-    for product in products:
-        print(product.name)
 
     # products = Product(
     #     name="Developer T-shirt",
@@ -114,3 +110,14 @@ with app.app_context():
     # db.session.add(products_3)
     #
     # db.session.commit()
+
+
+
+
+@app.route('/')
+def home():
+    result = db.session.execute(db.select(Product))
+    products = result.scalars().all()
+
+    return render_template('home.html', products=products)
+
