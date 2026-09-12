@@ -4,3 +4,5 @@
 .idea/
 
 instance/
+
+.venv
