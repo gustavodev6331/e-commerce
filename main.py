@@ -5,11 +5,15 @@ from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Numeric, DateTime
 from datetime import datetime
 from decimal import Decimal
+from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 
 
 app = Flask(__name__)
-
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+
+#creatin login-manager
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 class Base(DeclarativeBase):
     pass
@@ -20,7 +24,7 @@ db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
 
-class User(db.Model):
+class User(UserMixin ,db.Model):
     __tablename__ = 'user'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -111,17 +115,26 @@ with app.app_context():
     #
     # db.session.commit()
 
-
-
+def get_user_by_email(email):
+    result= db.session.execute(db.select(User).where(User.email == email))
+    return result.scalars()
 
 @app.route('/')
 def home():
     result = db.session.execute(db.select(Product))
     products = result.scalars().all()
 
-    return render_template('index.html', products=products)
+    return render_template('index.html', products=products, logged_in=current_user.is_authenticated)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, user_id)
 
 
+
+
+@app.route('/add-to-cart/<int:product_id>', methods=['POST'])
+def add_to_cart(product_id):
 
 
 
