@@ -1,12 +1,19 @@
 import os
-from flask import Flask, render_template, flash, redirect, url_for
+from urllib import request
+
+from flask import Flask, render_template, request, url_for, redirect, flash, send_from_directory, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Numeric, DateTime
 from datetime import datetime
 from decimal import Decimal
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
-from werkzeug.security import generate_password_hash
+
+from werkzeug.security import generate_password_hash, check_password_hash
+
+import os
+from dotenv import load_dotenv
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
@@ -150,7 +157,31 @@ def register():
 
     return render_template('register.html', logged_in=current_user.is_authenticated)
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
 
+        user = get_user_by_email(email)
+
+        if user is None:
+            flash("Email does not exist, please login.")
+            return redirect(url_for('login'))
+        if check_password_hash(user.password, password=password):
+            login_user(user)
+            return redirect(url_for('home'))
+        else:
+            flash("Invalid password. Please try again.")
+            return redirect(url_for('login'))
+
+    return render_template('login.html', logged_in=current_user.is_authenticated)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
 
 
 @app.route('/add-to-cart/<int:product_id>', methods=['POST'])
