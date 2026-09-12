@@ -1,12 +1,12 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, flash, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Numeric, DateTime
 from datetime import datetime
 from decimal import Decimal
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
-
+from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
@@ -129,6 +129,26 @@ def home():
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, user_id)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        new_user = User(
+            name=request.form['name'],
+            email=request.form['email'],
+            password=generate_password_hash(request.form['password'], method='pbkdf2:sha256', salt_length=8)
+        )
+        user = get_user_by_email(new_user.email)
+        if user:
+            flash("Email already registered, please login.")
+            return redirect(url_for('login'))
+        else:
+            db.session.add(new_user)
+            db.session.commit()
+            login_user(new_user)
+            return redirect(url_for('home'))
+
+    return render_template('register.html', logged_in=current_user.is_authenticated)
 
 
 
