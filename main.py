@@ -146,7 +146,7 @@ def register():
         )
         user = get_user_by_email(new_user.email)
         if user:
-            flash("Email already registered, please login.")
+            flash("Email already registered, please login instead.")
             return redirect(url_for('login'))
         else:
             db.session.add(new_user)
@@ -171,7 +171,7 @@ def login():
             login_user(user)
             return redirect(url_for('home'))
         else:
-            flash("Invalid password. Please try again.")
+            flash("Invalid password. Please try another password.")
             return redirect(url_for('login'))
 
     return render_template('login.html', logged_in=current_user.is_authenticated)
