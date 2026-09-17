@@ -185,6 +185,7 @@ def logout():
 
 
 @app.route('/add-to-cart/<int:product_id>', methods=['POST'])
+@login_required
 def add_to_cart(product_id):
     pass
 
