@@ -191,13 +191,15 @@ def add_to_cart(product_id):
     product = db.session.get(Product, product_id)
 
     new_cart_item = CartItem(
-        current_user=current_user.id,
+        user_id=current_user.id,
         product_id=product.id,
         quantity=1
     )
 
     db.session.add(new_cart_item)
     db.session.commit()
+
+    return redirect(url_for('home'))
 
 
 
