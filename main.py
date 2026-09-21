@@ -165,13 +165,13 @@ def login():
         user = get_user_by_email(email)
 
         if user is None:
-            flash("Email does not exist, please login.")
+            flash("Email does not exist, please register.")
             return redirect(url_for('login'))
         if check_password_hash(user.password, password=password):
             login_user(user)
             return redirect(url_for('home'))
         else:
-            flash("Invalid password. Please try another password.")
+            flash("Invalid password. Please try again.")
             return redirect(url_for('login'))
 
     return render_template('login.html', logged_in=current_user.is_authenticated)
