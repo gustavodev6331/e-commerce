@@ -190,13 +190,25 @@ def add_to_cart(product_id):
 
     product = db.session.get(Product, product_id)
 
-    new_cart_item = CartItem(
-        user_id=current_user.id,
-        product_id=product.id,
-        quantity=1
-    )
+    cart_item = db.session.execute(
+        db.select(CartItem).where(
+            CartItem.user_id == current_user.id,
+            CartItem.product_id == product_id,
+        )
+    ).scalar()
 
-    db.session.add(new_cart_item)
+    if cart_item:
+        cart_item.quantity += 1
+
+    else:
+        new_cart_item = CartItem(
+            user_id=current_user.id,
+            product_id=product.id,
+            quantity=1
+        )
+
+        db.session.add(new_cart_item)
+
     db.session.commit()
 
     return redirect(url_for('home'))
