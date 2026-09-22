@@ -213,6 +213,15 @@ def add_to_cart(product_id):
 
     return redirect(url_for('home'))
 
+@app.route('/cart')
+@login_required
+def cart():
+    cart_items = db.session.execute(
+        db.select(CartItem).where(
+            CartItem.user_id == current_user.id,
+        )
+    ).scalars().all()
+    return render_template('cart.html', cart_items=cart_items)
 
 
 if __name__ == '__main__':
