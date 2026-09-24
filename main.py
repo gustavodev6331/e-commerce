@@ -224,5 +224,28 @@ def cart():
     return render_template('cart.html', cart_items=cart_items)
 
 
+@app.route('/increase-cart/<int:cart_item_id>', methods=['POST'])
+@login_required
+def increase_cart(cart_item_id):
+    cart_item = db.session.get(CartItem, cart_item_id)
+
+    if cart_item:
+        cart_item.quantity += 1
+        db.session.commit()
+
+    return redirect(url_for('cart'))
+
+@app.route('/decrease-cart/<int:cart_item_id>', methods=['POST'])
+@login_required
+def decrease_cart(cart_item_id):
+    cart_item = db.session.get(CartItem, cart_item_id)
+
+    if cart_item:
+        cart_item.quantity -= 1
+        db.session.commit()
+
+    return redirect(url_for('cart'))
+
+
 if __name__ == '__main__':
     app.run(debug=True)
