@@ -242,10 +242,24 @@ def decrease_cart(cart_item_id):
 
     if cart_item:
         cart_item.quantity -= 1
+
+        if cart_item.quantity <= 0:
+            db.session.delete(cart_item)
+
         db.session.commit()
 
     return redirect(url_for('cart'))
 
+@app.route('/remove_from_cart/<int:cart_item_id>', methods=['POST'])
+@login_required
+def remove_cart(cart_item_id):
+    cart_item = db.session.get(CartItem, cart_item_id)
+
+    if cart_item:
+        db.session.delete(cart_item)
+        db.session.commit()
+
+    return redirect(url_for('cart'))
 
 if __name__ == '__main__':
     app.run(debug=True)
