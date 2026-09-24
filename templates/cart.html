@@ -2,16 +2,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
 </head>
+
 <body>
-  <h1>Cart</h1>
-  {% for item in cart_items %}
-    <p>{{ item.quantity }}</p>
-    <p>{{ item.product.name }}</p>
-    <p>{{ item.product.price }}</p>
-    <p>{{ item.product.photo_url }}</p>
-  {% endfor %}
+
+<section class="py-5">
+    <div class="container px-4 px-lg-5">
+
+        <h1 class="mb-5">Your Cart</h1>
+
+        {% set ns = namespace(total = 0) %}
+
+        {% for item in cart_items %}
+
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-2">
+                        <img src="{{ item.product.photo_url }}"
+                             class="img-fluid rounded"
+                             alt="{{ item.product.name }}">
+                    </div>
+
+                    <div class="col-md-4">
+                        <h5>{{ item.product.name }}</h5>
+                        <p class="text-muted mb-0">
+                            {{ item.product.description }}
+                        </p>
+                    </div>
+
+                    <div class="col-md-2">
+                        <strong>${{ item.product.price }}</strong>
+                    </div>
+
+                    <div class="col-md-2">
+                        Quantity: {{ item.quantity }}
+                    </div>
+
+                    <div class="col-md-2">
+                        Subtotal: {{ item.quantity*item.product.price }}
+                    </div>
+
+                    {% set ns.total = ns.total + (item.quantity * item.product.price) %}
+
+                </div>
+
+            </div>
+        </div>
+
+        {% endfor %}
+
+        <h3 class="text-end">Total: ${{ ns.total }}</h3>
+
+    </div>
+</section>
 
 </body>
 </html>
+```
