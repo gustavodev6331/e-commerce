@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
+
+<body>
+
+<section class="py-5">
+    <div class="container px-4 px-lg-5">
+
+        <h1 class="mb-5">Checkout</h1>
+
+        {% set ns = namespace(total=0) %}
+
+        {% for item in cart_items %}
+
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-2">
+                        <img src="{{ item.product.photo_url }}"
+                             class="img-fluid rounded"
+                             alt="{{ item.product.name }}">
+                    </div>
+
+                    <div class="col-md-5">
+                        <h5>{{ item.product.name }}</h5>
+
+                        <p class="text-muted mb-2">
+                            {{ item.product.description }}
+                        </p>
+
+                        <p class="mb-0">
+                            Quantity: {{ item.quantity }}
+                        </p>
+                    </div>
+
+                    <div class="col-md-2">
+                        <strong>${{ item.product.price }}</strong>
+                    </div>
+
+                    <div class="col-md-3 text-end">
+                        <strong>
+                            Subtotal: ${{ item.quantity * item.product.price }}
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        {% set ns.total = ns.total + (item.quantity * item.product.price) %}
+
+        {% endfor %}
+
+        <div class="d-flex justify-content-end gap-3 mt-4">
+
+            <a class="btn btn-outline-dark"
+                href="{{ url_for('cart') }}">
+                Back to Cart
+            </a>
+
+            <a class="btn btn-dark"
+                href="{{ url_for('payment') }}">
+                Continue to Payment
+            </a>
+
+        </div>
+
+        <div class="text-end mt-4">
+            <h3>Total: ${{ ns.total }}</h3>
+        </div>
+
+    </div>
+</section>
+
+</body>
+</html>
+

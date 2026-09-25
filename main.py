@@ -269,6 +269,11 @@ def checkout():
     )).scalars().all()
     return render_template('checkout.html', cart_items=cart_items)
 
+@app.route('/payment')
+@login_required
+def payment():
+    pass
+
 
 if __name__ == '__main__':
     app.run(debug=True)
