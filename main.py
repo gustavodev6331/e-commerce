@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Numeric, DateTime
 
+import stripe
+
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import os
@@ -13,6 +15,8 @@ from datetime import datetime
 from decimal import Decimal
 
 load_dotenv()
+
+stripe.api_key=os.getenv("STRIPE_SECRET_KEY")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
@@ -272,8 +276,21 @@ def checkout():
 @app.route('/payment')
 @login_required
 def payment():
-    pass
-
+    cart_items = db.session.execute(db.select(CartItem).where(
+        CartItem.user_id == current_user.id
+    )).scalars().all()
+    line_items = []
+    for item in cart_items:
+        line_items.append({
+            "price_data": {
+                "currency": "usd",
+                "product_data": {
+                    "name": item.product.name
+                },
+                "unit_amount": int(item.product.price * 100),
+        },
+        "quantity": item.quantity
+        })
 
 if __name__ == '__main__':
     app.run(debug=True)
