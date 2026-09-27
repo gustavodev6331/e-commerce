@@ -327,8 +327,27 @@ def webhook():
             )
         ).scalars().all()
 
-        print(cart_items)
+        total = Decimal("0.00")
+
+        for item in cart_items:
+            total += item.quantity * item.product.price
+
+        print(total)
+
+        new_order = Order(
+            date=datetime.now(),
+            status='paid',
+            total=total,
+            stripe_session_id=session['id'],
+            user_id=user.id,
+        )
+        db.session.add(new_order)
+        db.session.commit()
+
+        print(new_order)
     return " ", 200
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
