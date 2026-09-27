@@ -78,6 +78,7 @@ class Order(db.Model):
     date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     total: Mapped[Decimal] = mapped_column(Numeric(10,2), nullable=False)
     status: Mapped[str] = mapped_column(String, nullable=False)
+    stripe_session_id: Mapped[str] = mapped_column(String(255), nullable=False)
 
     user_id: Mapped[int] = mapped_column(db.ForeignKey('user.id'))
 
@@ -295,10 +296,19 @@ def payment():
     checkout_session = stripe.checkout.Session.create(
         line_items=line_items,
         mode='payment',
+        client_reference_id=str(current_user.id),
         success_url=url_for('home', _external=True),
         cancel_url=url_for('cart', _external=True),
     )
     return redirect(checkout_session.url)
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    payload = request.get_data()
+
+    print(payload)
+
+    return " ", 200
 
 if __name__ == '__main__':
     app.run(debug=True)
