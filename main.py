@@ -17,6 +17,7 @@ from decimal import Decimal
 load_dotenv()
 
 stripe.api_key=os.getenv("STRIPE_SECRET_KEY")
+webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
@@ -306,8 +307,27 @@ def payment():
 def webhook():
     payload = request.get_data()
 
-    print(payload)
+    event = stripe.Webhook.construct_event(
+        payload,
+        request.headers.get('Stripe-Signature'),
+        webhook_secret
 
+    )
+
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        user_id= session['client_reference_id']
+        user = db.session.get(User, user_id)
+
+        print(user)
+
+        cart_items = db.session.execute(
+            db.select(CartItem).where(
+                CartItem.user_id == user.id,
+            )
+        ).scalars().all()
+
+        print(cart_items)
     return " ", 200
 
 if __name__ == '__main__':
