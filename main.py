@@ -292,5 +292,13 @@ def payment():
         "quantity": item.quantity
         })
 
+    checkout_session = stripe.checkout.Session.create(
+        line_items=line_items,
+        mode='payment',
+        success_url=url_for('home', _external=True),
+        cancel_url=url_for('cart', _external=True),
+    )
+    return redirect(checkout_session.url)
+
 if __name__ == '__main__':
     app.run(debug=True)
