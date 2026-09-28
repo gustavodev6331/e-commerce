@@ -342,6 +342,20 @@ def webhook():
             user_id=user.id,
         )
         db.session.add(new_order)
+        db.session.flush()
+
+        for item in cart_items:
+            order_items = OrderItems(
+                quantity=item.quantity,
+                product_id=item.product.id,
+                price=item.product.price,
+                order_id=new_order.id,
+            )
+            db.session.add(order_items)
+
+        for item in cart_items:
+            db.session.delete(item)
+
         db.session.commit()
 
         print(new_order)
