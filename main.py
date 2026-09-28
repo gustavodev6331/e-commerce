@@ -361,6 +361,15 @@ def webhook():
         print(new_order)
     return " ", 200
 
+@app.route('/orders')
+@login_required
+def orders():
+    orders = db.session.execute(
+        db.select(Order).where(
+            Order.user_id == current_user.id,
+        )
+    ).scalars().all()
+    return render_template('orders.html', orders=orders)
 
 
 if __name__ == '__main__':
