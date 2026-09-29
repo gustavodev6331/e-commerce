@@ -48,10 +48,17 @@
 
                     </ul>
 
+                    {% if logged_in %}
+                    <a class="btn btn-outline-dark me-3" href="{{ url_for('orders') }}">
+                        <i class="bi-receipt me-1"></i>
+                        Orders history
+                    </a>
+
                     <a class="btn btn-outline-dark" href="{{ url_for('cart') }}">
                         <i class="bi-cart-fill me-1"></i>
                         Cart
                     </a>
+                    {% endif %}
                 </div>
             </div>
         </nav>
