@@ -319,6 +319,15 @@ def webhook():
         user_id= session['client_reference_id']
         user = db.session.get(User, user_id)
 
+        existing_order = db.session.execute(
+            db.select(Order).where(
+                Order.stripe_session_id == session['id']
+            )
+        ).scalar()
+
+        if existing_order:
+            return "", 200
+
         print(user)
 
         cart_items = db.session.execute(
