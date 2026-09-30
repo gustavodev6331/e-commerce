@@ -298,7 +298,7 @@ def payment():
         line_items=line_items,
         mode='payment',
         client_reference_id=str(current_user.id),
-        success_url=url_for('home', _external=True),
+        success_url=url_for('payment_success', _external=True),
         cancel_url=url_for('cart', _external=True),
     )
     return redirect(checkout_session.url)
@@ -379,6 +379,11 @@ def orders():
         )
     ).scalars().all()
     return render_template('orders.html', orders=orders)
+
+@app.route('/payment_success')
+@login_required
+def payment_success():
+    return render_template('payment_success.html')
 
 
 if __name__ == '__main__':
