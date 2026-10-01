@@ -99,33 +99,35 @@ class OrderItems(db.Model):
     product: Mapped["Product"] = relationship(back_populates="order_items")
     order: Mapped["Order"] = relationship(back_populates="order_items")
 
+#add new products:
 with app.app_context():
     db.create_all()
 
-#add new products:
-    # products = Product(
-    #     name="Developer T-shirt",
-    #     description="A T-shirt made for developers",
-    #     price=29.99,
-    #     photo_url="https://shirt.com",
-    # )
-    # db.session.add(products)
-    # products_2 = Product(
-    #     name="Gamer Keyboard",
-    #     description="The perfect keyboard for who love gaming",
-    #     price=49.99,
-    #     photo_url="https://keyboard.com",
-    # )
-    # db.session.add(products_2)
-    # products_3 = Product(
-    #     name="Developer chair",
-    #     description="The most comfortable chair for developers who have to work hours a day.",
-    #     price=89.99,
-    #     photo_url="https://developerchair.com",
-    # )
-    # db.session.add(products_3)
-    #
-    # db.session.commit()
+    if db.session.execute(db.select(Product)).first() is None:
+        products = [
+            Product(
+                name="Developer T-shirt",
+                description="Comfortable t-shirt for developers.",
+                price=29.99,
+                photo_url="/static/images/developer-tshirt.jpg"
+            ),
+            Product(
+                name="Gamer Keyboard",
+                description="Mechanical keyboard for coding and gaming.",
+                price=49.99,
+                photo_url="/static/images/gamer_keyboard.jpeg"
+            ),
+            Product(
+                name="Developer chair",
+                description="Comfortable chair for long coding sessions.",
+                price=89.99,
+                photo_url="/static/images/gamer-chair.jpg"
+            )
+        ]
+
+        db.session.add_all(products)
+        db.session.commit()
+
 
 def get_user_by_email(email):
     result= db.session.execute(db.select(User).where(User.email == email))
@@ -371,7 +373,7 @@ def webhook():
 
         db.session.commit()
 
-        print(new_order)
+
     return " ", 200
 
 @app.route('/orders')
