@@ -1,81 +1,191 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Cart</title>
 
-    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
 </head>
 
 <body>
 
-<section class="py-5">
-    <div class="container px-4 px-lg-5">
+<div class="container py-5">
 
-        <h1 class="mb-5">Your Cart</h1>
 
-        {% set ns = namespace(total = 0) %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="fw-bold mb-1">Your Cart</h1>
+        <p class="text-muted mb-0">Review your items before checkout.</p>
+    </div>
 
-        {% for item in cart_items %}
+    <a href="{{ url_for('home') }}" class="btn btn-outline-dark">
+        <i class="bi bi-arrow-left me-1"></i>
+        Continue Shopping
+    </a>
+</div>
 
-        <div class="card mb-4">
-            <div class="card-body">
+{% if cart_items %}
 
-                <div class="row align-items-center">
+    <div class="card shadow-sm">
+                        <div class="row justify-content-end mt-4">
+                <div class="col-md-5 col-lg-4">
 
-                    <div class="col-md-2">
-                        <img src="{{ item.product.photo_url }}"
-                             class="img-fluid rounded"
-                             alt="{{ item.product.name }}">
+                    <div class="card shadow-sm">
+
+                        <div class="card-body">
+
+                            <h4 class="fw-bold mb-4">Order Summary</h4>
+
+                            {% set subtotal = namespace(value=0) %}
+
+                            {% for item in cart_items %}
+                                {% set subtotal.value = subtotal.value + (item.product.price * item.quantity) %}
+                            {% endfor %}
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal</span>
+                                <span>${{ "%.2f"|format(subtotal.value) }}</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Shipping</span>
+                                <span class="text-success">Free</span>
+                            </div>
+
+                            <hr>
+
+                            <div class="d-flex justify-content-between mb-4">
+                                <strong>Total</strong>
+                                <strong>${{ "%.2f"|format(subtotal.value) }}</strong>
+                            </div>
+
+                            <a href="{{ url_for('checkout') }}"
+                                class="btn btn-dark w-100">
+                                Proceed to Checkout
+                                <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+
+                        </div>
+
                     </div>
 
-                    <div class="col-md-3">
-                        <h5>{{ item.product.name }}</h5>
-                        <p class="text-muted mb-0">
-                            {{ item.product.description }}
-                        </p>
-                    </div>
+                </div>
+                </div>
 
-                    <div class="col-md-2">
-                        <strong>${{ item.product.price }}</strong>
-                    </div>
 
-                    <div class="col-md-2">
-                        <form action="{{ url_for('increase_cart', cart_item_id=item.id) }}" method="POST">
-                            <button type="submit" class="btn btn-outline-dark">+</button>
+        <div class="card-body">
+
+            {% for item in cart_items %}
+
+            <div class="row align-items-center py-4 {% if not loop.last %}border-bottom{% endif %}">
+
+                <!-- Product image -->
+                <div class="col-md-2 text-center">
+                    <img src="{{ item.product.photo_url }}"
+                         alt="{{ item.product.name }}"
+                         class="img-fluid rounded"
+                         style="max-height: 100px;">
+                </div>
+
+                <!-- Product information -->
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-1">
+                        {{ item.product.name }}
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        ${{ "%.2f"|format(item.product.price) }} each
+                    </p>
+                </div>
+
+                <!-- Quantity controls -->
+                <div class="col-md-3 text-center">
+
+                    <div class="d-inline-flex align-items-center">
+
+                        <form action="{{ url_for('decrease_cart', cart_item_id=item.id) }}"
+                              method="POST">
+                            <button type="submit"
+                                    class="btn btn-outline-dark btn-sm">
+                                <i class="bi bi-dash"></i>
+                            </button>
                         </form>
 
-                        <form action="{{ url_for('decrease_cart', cart_item_id=item.id) }}" method="POST">
-                            <button type="submit" class="btn btn-outline-dark">-</button>
+                        <span class="mx-3 fw-bold">
+                            {{ item.quantity }}
+                        </span>
+
+                        <form action="{{ url_for('increase_cart', cart_item_id=item.id) }}"
+                              method="POST">
+                            <button type="submit"
+                                    class="btn btn-outline-dark btn-sm">
+                                <i class="bi bi-plus"></i>
+                            </button>
                         </form>
-                        <span>Quantity: {{ item.quantity }}</span>
+
                     </div>
 
-                    <div class="col-md-1">
-                        <form action="{{ url_for('remove_cart', cart_item_id=item.id) }}" method="POST">
-                            <button type="submit" class="btn btn-outline-dark">remove</button>
-                        </form>
-                    </div>
+                </div>
 
-                    <div class="col-md-2">
-                        Subtotal: {{ item.quantity*item.product.price }}
-                    </div>
+                <!-- Subtotal -->
+                <div class="col-md-2 text-md-end">
+                    <span class="fw-bold">
+                        ${{ "%.2f"|format(item.product.price * item.quantity) }}
+                    </span>
+                </div>
 
-                    {% set ns.total = ns.total + (item.quantity * item.product.price) %}
+                <!-- Remove -->
+                <div class="col-md-1 text-md-end">
+
+                    <form action="{{ url_for('remove_cart', cart_item_id=item.id) }}"
+                          method="POST">
+                        <button type="submit"
+                                class="btn btn-outline-danger btn-sm"
+                                title="Remove item">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
 
                 </div>
 
             </div>
+
+            {% endfor %}
+
         </div>
 
-        {% endfor %}
+    </div>
 
-        <h3 class="text-end">Total: ${{ ns.total }}</h3>
+{% else %}
+
+    <div class="text-center py-5">
+
+        <i class="bi bi-cart-x text-muted"
+           style="font-size: 5rem;"></i>
+
+        <h3 class="mt-4">Your cart is empty</h3>
+
+        <p class="text-muted">
+            Looks like you haven't added anything to your cart yet.
+        </p>
+
+        <a href="{{ url_for('home') }}" class="btn btn-dark">
+            Start Shopping
+        </a>
 
     </div>
-</section>
+
+{% endif %}
+
+
+</div>
 
 </body>
 </html>
-
