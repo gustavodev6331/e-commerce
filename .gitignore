@@ -1,8 +1,16 @@
-#enviorment methods
+# Environment
 .env
 
+# Virtual environment
+.venv/
+
+# PyCharm
 .idea/
 
-instance/
+# Python
+__pycache__/
+*.pyc
 
-.venv
+# Local database
+instance/
+*.db
