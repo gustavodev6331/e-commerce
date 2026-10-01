@@ -102,7 +102,7 @@ class OrderItems(db.Model):
 with app.app_context():
     db.create_all()
 
-
+#add new products:
     # products = Product(
     #     name="Developer T-shirt",
     #     description="A T-shirt made for developers",
