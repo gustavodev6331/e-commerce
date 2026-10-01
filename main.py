@@ -196,6 +196,9 @@ def add_to_cart(product_id):
 
     product = db.session.get(Product, product_id)
 
+    if product is None:
+        return redirect(url_for('home'))
+
     cart_item = db.session.execute(
         db.select(CartItem).where(
             CartItem.user_id == current_user.id,
@@ -234,6 +237,9 @@ def cart():
 @login_required
 def increase_cart(cart_item_id):
     cart_item = db.session.get(CartItem, cart_item_id)
+
+    if cart_item is None:
+        return redirect(url_for('home'))
 
     if cart_item:
         cart_item.quantity += 1
@@ -328,7 +334,6 @@ def webhook():
         if existing_order:
             return "", 200
 
-        print(user)
 
         cart_items = db.session.execute(
             db.select(CartItem).where(
@@ -341,7 +346,6 @@ def webhook():
         for item in cart_items:
             total += item.quantity * item.product.price
 
-        print(total)
 
         new_order = Order(
             date=datetime.now(),
