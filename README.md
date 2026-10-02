@@ -213,7 +213,7 @@ python main.py
 The application will be available at:
 
 ```text
-http://127.0.0.1:5000
+https://e-commerce-65u9.onrender.com
 ```
 
 ## Testing Stripe Locally
