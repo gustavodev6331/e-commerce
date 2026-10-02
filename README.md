@@ -4,6 +4,11 @@ A full-stack e-commerce web application built with Flask and Python.
 
 The project was created as a practical way to work with user authentication, relational databases, shopping carts, checkout, payments, Stripe webhooks, and order management in a single application.
 
+
+## Live Demo
+
+[Developer Store](https://e-commerce-65u9.onrender.com)
+
 ## Features
 
 * User registration and login
@@ -213,9 +218,32 @@ python main.py
 The application will be available at:
 
 ```text
-https://e-commerce-65u9.onrender.com
+http://127.0.0.1:5000
 ```
 
 ## Testing Stripe Locally
 
-Because Stripe cannot directly access a local Flask server, the Stripe CLI can
+Because Stripe cannot directly access a local Flask server, the Stripe CLI can be used to forward Stripe webhook events to the local application.
+
+Start the Flask application first:
+
+```bash
+python main.py
+```
+
+Then, in another terminal, run:
+
+```bash
+stripe listen --events checkout.session.completed --forward-to localhost:5000/webhook
+```
+
+The Stripe CLI will provide a webhook signing secret. Use that value as:
+
+```env
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+```
+
+You can then complete a test payment through the application and Stripe will forward the `checkout.session.completed` event to the local `/webhook` endpoint.
+
+This setup is only required for local Stripe testing. The deployed application uses a Stripe webhook endpoint configured for the Render deployment.
+
